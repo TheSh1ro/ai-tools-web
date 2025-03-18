@@ -17,8 +17,6 @@ const newTags = ref<Record<string, string>>({})
 const isTranslated = ref(false)
 
 onMounted(() => {
-  // In a real application, you would fetch the data from a store or API
-  // This is a mock implementation for demonstration
   prompt.value = new PromptClass(id, 'Título do Card')
 })
 
@@ -40,7 +38,7 @@ const promptText = computed(() => {
     result += category.tags.join(', ') + ', '
   })
 
-  // Remove the last comma and space
+  // Remove a última vírgula e o espaço
   return result.slice(0, -2)
 })
 
@@ -90,7 +88,6 @@ function toggleTranslation() {
 }
 
 function translateToEnglish(text: string) {
-  // Mock de tradução
   return 'Tradução (en): ' + text
 }
 
@@ -204,7 +201,7 @@ const displayedPromptText = computed(() => {
   border: none;
   cursor: pointer;
   font-weight: 600;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
 }
 
 .button-item:hover {
@@ -237,7 +234,7 @@ const displayedPromptText = computed(() => {
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
+  transition: all 0.2s;
 }
 
 .category-container:hover {
@@ -278,7 +275,7 @@ const displayedPromptText = computed(() => {
   cursor: pointer;
   border-radius: 0 8px 8px 0;
   font-weight: 600;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
 }
 
 .tag-input button:hover {
@@ -298,7 +295,7 @@ const displayedPromptText = computed(() => {
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.85rem;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
   overflow-wrap: break-word;
   word-wrap: break-word;
   word-break: break-all;
@@ -317,7 +314,7 @@ const displayedPromptText = computed(() => {
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
+  transition: all 0.2s;
   width: 100%;
   overflow: hidden;
 }
@@ -356,11 +353,10 @@ const displayedPromptText = computed(() => {
   font-weight: 600;
 }
 
-/* Animações e transições */
 .button-item,
 .tag-input button,
 .tag {
-  transition: all 0.2s ease;
+  transition: all 0.2s;
 }
 
 .preview-actions {
