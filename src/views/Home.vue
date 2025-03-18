@@ -197,14 +197,14 @@ addSamplePrompts()
         <span class="stat-value">{{ promptCount }}</span>
         <span class="stat-label">Prompts salvos</span>
       </div>
-      <div class="stat-card">
+      <!-- <div class="stat-card">
         <span class="stat-value">3</span>
         <span class="stat-label">Usados hoje</span>
       </div>
       <div class="stat-card">
         <span class="stat-value">42</span>
         <span class="stat-label">Total de usos</span>
-      </div>
+      </div> -->
     </div>
 
     <div class="prompt-cards" :class="viewMode">
@@ -246,7 +246,7 @@ addSamplePrompts()
         <div class="card-image">
           <img src="@/assets/example.png" alt="Imagem de capa" />
           <div class="card-badges">
-            <span class="badge">IA</span>
+            <span class="badge">SDXL</span>
           </div>
         </div>
 
