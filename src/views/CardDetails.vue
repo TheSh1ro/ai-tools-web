@@ -14,6 +14,8 @@ const id = Number(route.params.id)
 const prompt = ref<PromptClass | null>(null)
 const newTags = ref<Record<string, string>>({})
 
+const isTranslated = ref(false)
+
 onMounted(() => {
   // In a real application, you would fetch the data from a store or API
   // This is a mock implementation for demonstration
@@ -25,7 +27,7 @@ const categories = computed(() => {
 
   return Object.entries(prompt.value.description).map(([key, value]) => ({
     key,
-    ...value
+    ...value,
   }))
 })
 
@@ -55,7 +57,7 @@ function removeTag(category: string, tagIndex: number) {
 
   prompt.value.description[category as keyof typeof prompt.value.description].tags.splice(
     tagIndex,
-    1
+    1,
   )
 }
 
@@ -82,6 +84,19 @@ function handleKeyDown(event: KeyboardEvent, category: string) {
     addTag(category)
   }
 }
+
+function toggleTranslation() {
+  isTranslated.value = !isTranslated.value
+}
+
+function translateToEnglish(text: string) {
+  // Mock de tradução
+  return 'Tradução (en): ' + text
+}
+
+const displayedPromptText = computed(() => {
+  return isTranslated.value ? translateToEnglish(promptText.value) : promptText.value
+})
 </script>
 
 <template>
@@ -92,41 +107,45 @@ function handleKeyDown(event: KeyboardEvent, category: string) {
         <span>Voltar</span>
       </button>
       <h1>{{ prompt.title }}</h1>
-      <button class="button-item" @click="copyToClipboard">
-        <OhVueIcon name="md-contentcopy" />
-        <span>Copiar Prompt</span>
-      </button>
     </div>
 
-    <div class="categories">
-      <div v-for="category in categories" :key="category.key" class="category-container">
-        <h2>{{ category.label }}</h2>
-        <div class="tag-input">
-          <input
-            type="text"
-            :placeholder="`Adicionar ${category.label.toLowerCase()}`"
-            v-model="newTags[category.key]"
-            @keydown="(e) => handleKeyDown(e, category.key)"
-          />
-          <button @click="addTag(category.key)">Adicionar</button>
-        </div>
-        <div class="tags">
-          <span
-            v-for="(tag, index) in category.tags"
-            :key="index"
-            class="tag"
-            @click="removeTag(category.key, index)"
-          >
-            {{ tag }}
-          </span>
+    <div class="main-content">
+      <div class="categories">
+        <div v-for="category in categories" :key="category.key" class="category-container">
+          <h2>{{ category.label }}</h2>
+          <div class="tag-input">
+            <input
+              type="text"
+              :placeholder="`Adicionar ${category.label.toLowerCase()}`"
+              v-model="newTags[category.key]"
+              @keydown="(e) => handleKeyDown(e, category.key)"
+            />
+            <button @click="addTag(category.key)">Adicionar</button>
+          </div>
+          <div class="tags">
+            <span
+              v-for="(tag, index) in category.tags"
+              :key="index"
+              class="tag"
+              @click="removeTag(category.key, index)"
+            >
+              {{ tag }}
+            </span>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="prompt-preview">
-      <h2>Preview do Prompt</h2>
-      <div class="preview-content">
-        {{ promptText }}
+      <div class="prompt-preview">
+        <h2>Preview do Prompt</h2>
+        <div class="preview-content">
+          {{ displayedPromptText }}
+        </div>
+        <div class="preview-actions">
+          <button class="button-item" @click="copyToClipboard">Copiar Prompt</button>
+          <button class="button-item" @click="toggleTranslation">
+            {{ isTranslated ? 'Exibir Original' : 'Exibir Traduzido' }}
+          </button>
+        </div>
       </div>
     </div>
   </main>
@@ -134,14 +153,28 @@ function handleKeyDown(event: KeyboardEvent, category: string) {
 </template>
 
 <style scoped>
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--purple-700);
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-track {
+  /* background-color: var(--gray-800); */
+  background-color: transparent;
+  border-radius: 8px;
+}
+
 .card-details {
   flex: 1;
-  min-height: 100%;
-  padding: 1.5rem;
-
+  max-height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1rem;
+  padding: 1.5rem;
 }
 
 .header {
@@ -184,10 +217,19 @@ function handleKeyDown(event: KeyboardEvent, category: string) {
   transform: translateY(0);
 }
 
+.main-content {
+  display: grid;
+  grid-template-columns: 8fr 10fr;
+  gap: 1rem;
+  overflow: hidden;
+}
+
 .categories {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  overflow-y: auto;
+  padding-right: 0.5rem;
 }
 
 .category-container {
@@ -230,7 +272,7 @@ function handleKeyDown(event: KeyboardEvent, category: string) {
 
 .tag-input button {
   background-color: var(--purple-700);
-  color: var(--gray-100);
+  color: var (--gray-100);
   border: none;
   padding: 0.75rem 1.25rem;
   cursor: pointer;
@@ -251,12 +293,15 @@ function handleKeyDown(event: KeyboardEvent, category: string) {
 
 .tag {
   background-color: var(--purple-900);
-  color: var(--purple-200);
+  color: var (--purple-200);
   padding: 0.4rem 0.75rem 0.25rem 0.75rem;
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.85rem;
   transition: all 0.2s ease;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-all;
 }
 
 .tag:hover {
@@ -265,11 +310,16 @@ function handleKeyDown(event: KeyboardEvent, category: string) {
 }
 
 .prompt-preview {
+  display: flex;
+  flex-direction: column;
+
   background-color: var(--gray-800);
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
+  width: 100%;
+  overflow: hidden;
 }
 
 .prompt-preview:hover {
@@ -284,6 +334,8 @@ function handleKeyDown(event: KeyboardEvent, category: string) {
 }
 
 .preview-content {
+  flex: 1;
+
   background-color: var(--gray-900);
   padding: 1.25rem;
   border-radius: 8px;
@@ -291,6 +343,7 @@ function handleKeyDown(event: KeyboardEvent, category: string) {
   word-break: break-word;
   color: var(--gray-100);
   border: 1px solid var(--purple-900);
+  overflow-y: auto;
 }
 
 .loading {
@@ -310,8 +363,9 @@ function handleKeyDown(event: KeyboardEvent, category: string) {
   transition: all 0.2s ease;
 }
 
-.button-item:active,
-.tag-input button:active {
-  transform: scale(0.95);
+.preview-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
 }
 </style>
